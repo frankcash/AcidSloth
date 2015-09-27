@@ -13,6 +13,11 @@ from ttk import Frame, Button, Style
 import os
 import gnupg
 
+TCP_IP = '127.0.0.1'
+TCP_PORT = 3000
+BUFFER_SIZE = 1024
+MESSAGE = "Hello, World!"
+
 gpg = gnupg.GPG(gnupghome='/home/user/gpghome')
 
 def keyserv_export(key):
@@ -63,8 +68,16 @@ class SDR(Frame):
         encrypted_data = gpg.encrypt(unencrypted_string, "arelin@sas.upenn.edu")
         encrypted_string = str(encrypted_data)
         
-        print "reached"
+        #print "reached"
         print encrypted_string
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.connect((TCP_IP, TCP_PORT))   
+        s.send(encrypted_string)
+        data = s.recv(BUFFER_SIZE)
+        s.close()
+        with open('/home/user/NetBeansProjects/decrypt/src/data.txt', 'w') as f:
+            f.write(encrypted_string)
+
        
         decrypted_data = gpg.decrypt(encrypted_string, passphrase='password')
         print("decrypted:" + str(decrypted_data))
