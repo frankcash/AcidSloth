@@ -13,6 +13,17 @@ from ttk import Frame, Button, Style
 import os
 import gnupg
 
+gpg = gnupg.GPG(gnupghome='/home/user/gpghome')
+
+def keyserv_export(key):
+        ascii_armored_public_keys = gpg.export_keys(key)
+        ascii_armored_private_keys = gpg.export_keys(key, True)
+        print ascii_armored_private_keys
+        with open('mykeyfile.asc', 'w') as f:
+            f.write(ascii_armored_public_keys)
+            f.write(ascii_armored_private_keys)
+            
+            
 class SDR(Frame):
   
     def __init__(self, parent):
@@ -47,13 +58,17 @@ class SDR(Frame):
 
     def send_text(self):
         string_to_encrypt = self.e.get("1.0",END)
-        gpg = gnupg.GPG(gnupghome='/home/user/gpghome')
         unencrypted_string = string_to_encrypt
         print string_to_encrypt + "\n"
-        encrypted_data = gpg.encrypt(unencrypted_string, self.email)
+        encrypted_data = gpg.encrypt(unencrypted_string, "arelin@sas.upenn.edu")
         encrypted_string = str(encrypted_data)
-        print  encrypted_string
+        
+        print "reached"
+        print encrypted_string
        
+        decrypted_data = gpg.decrypt(encrypted_string, passphrase='password')
+        print("decrypted:" + str(decrypted_data))
+
     def create_key(self):
         top = self.top = Toplevel(self.parent)
         top.wm_title("New User")
@@ -77,9 +92,12 @@ class SDR(Frame):
 
         gpg = gnupg.GPG(gnupghome='/home/user/gpghome')
         input_data = gpg.gen_key_input(
-        name_email=self.e.get(),
-        passphrase=self.g.get())
-        key = gpg.gen_key(input_data)
+        name_email="arelin@sas.upenn.edu",
+        passphrase="password")
+        key = str(gpg.gen_key(input_data))
+        keyserv_export(key)
+        self.email = "arelin@sas.upenn.edu"
+        gpg.send_keys('keyserv.ubuntu.com', key)
         print key
 
         self.top.destroy()
