@@ -1,21 +1,11 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 ##################################################
-# GNU Radio Python Flow Graph
+# Gnuradio Python Flow Graph
 # Title: Transmit
 # Author: AcidSloth
 # Description: Transmits GPG
 # Generated: Sun Sep 27 01:52:37 2015
 ##################################################
-
-if __name__ == '__main__':
-    import ctypes
-    import sys
-    if sys.platform.startswith('linux'):
-        try:
-            x11 = ctypes.cdll.LoadLibrary('libX11.so')
-            x11.XInitThreads()
-        except:
-            print "Warning: failed to XInitThreads()"
 
 from gnuradio import analog
 from gnuradio import audio
@@ -33,11 +23,12 @@ import osmosdr
 import time
 import wx
 
-
 class Transmit(grc_wxgui.top_block_gui):
 
     def __init__(self):
         grc_wxgui.top_block_gui.__init__(self, title="Transmit")
+        _icon_path = "/usr/share/icons/hicolor/32x32/apps/gnuradio-grc.png"
+        self.SetIcon(wx.Icon(_icon_path, wx.BITMAP_TYPE_ANY))
 
         ##################################################
         # Variables
@@ -88,7 +79,7 @@ class Transmit(grc_wxgui.top_block_gui):
         self.osmosdr_sink_0.set_bb_gain(20, 0)
         self.osmosdr_sink_0.set_antenna("", 0)
         self.osmosdr_sink_0.set_bandwidth(0, 0)
-          
+
         _gain_sizer = wx.BoxSizer(wx.VERTICAL)
         self._gain_text_box = forms.text_box(
         	parent=self.GetWin(),
@@ -123,10 +114,18 @@ class Transmit(grc_wxgui.top_block_gui):
         ##################################################
         # Connections
         ##################################################
-        self.connect((self.analog_nbfm_tx_0, 0), (self.rational_resampler_xxx_0, 0))    
-        self.connect((self.audio_source_0, 0), (self.analog_nbfm_tx_0, 0))    
-        self.connect((self.audio_source_0, 0), (self.wxgui_scopesink2_0, 0))    
-        self.connect((self.rational_resampler_xxx_0, 0), (self.osmosdr_sink_0, 0))    
+<<<<<<< HEAD
+        self.connect((self.analog_nbfm_tx_0, 0), (self.rational_resampler_xxx_0, 0))
+        self.connect((self.audio_source_0, 0), (self.analog_nbfm_tx_0, 0))
+        self.connect((self.audio_source_0, 0), (self.wxgui_scopesink2_0, 0))
+        self.connect((self.rational_resampler_xxx_0, 0), (self.osmosdr_sink_0, 0))
+=======
+        self.connect((self.analog_nbfm_tx_0, 0), (self.rational_resampler_xxx_0, 0))
+        self.connect((self.audio_source_0, 0), (self.analog_nbfm_tx_0, 0))
+        self.connect((self.audio_source_0, 0), (self.wxgui_scopesink2_0, 0))
+        self.connect((self.rational_resampler_xxx_0, 0), (self.uhd_usrp_sink_0, 0))
+
+>>>>>>> 3d8d9462dccebde3f004b0663274cea6cdc2ac37
 
 
     def get_samp_rate(self):
@@ -165,8 +164,15 @@ class Transmit(grc_wxgui.top_block_gui):
     def set_audio_interp(self, audio_interp):
         self.audio_interp = audio_interp
 
-
 if __name__ == '__main__':
+    import ctypes
+    import sys
+    if sys.platform.startswith('linux'):
+        try:
+            x11 = ctypes.cdll.LoadLibrary('libX11.so')
+            x11.XInitThreads()
+        except:
+            print "Warning: failed to XInitThreads()"
     parser = OptionParser(option_class=eng_option, usage="%prog: [options]")
     (options, args) = parser.parse_args()
     tb = Transmit()
